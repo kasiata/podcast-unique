@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Artist Myth Bingo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: blunt, funny, a little cruel to the clichés, never to the guest
+   IDEA: a cheap bingo-hall card on thin paper, hit with an ink dauber live on air
+   PICTURE: the card itself, large, at the top; daubs land as wet red stamps
+   COLOUR and TYPE: newsprint white, hard black ink, one dauber red; Archivo condensed (the show's wordmark)
+   LAYOUT: title strip, then card + live scoreboard/log side by side; stacks below 900px */
+:root{color-scheme:light dark;
+  --bg:light-dark(#ecebe6,#101010);
+  --paper:light-dark(#ffffff,#1b1b1b);
+  --ink:light-dark(#111111,#ededea);
+  --dim:light-dark(#5d5d5a,#a3a39e);
+  --rule:light-dark(#111111,#5b5b58);
+  --hair:light-dark(#d6d5d0,#333331);
+  --red:#e3173e;
+  --redwash:light-dark(rgba(227,23,62,.86),rgba(227,23,62,.78));
+}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Archivo",system-ui,sans-serif;overflow-x:clip}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.band{padding:clamp(20px,3.5vw,48px) max(4vw,14px)}
+.wrap{max-width:1240px;margin:0 auto}
+header.band{padding-bottom:0}
+.title{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;border-bottom:3px solid var(--rule);padding-bottom:12px}
+h1{margin:0;font-stretch:62%;font-weight:900;font-size:clamp(40px,7vw,76px);line-height:.92;letter-spacing:-.01em;text-transform:uppercase;text-wrap:balance}
+.sub{margin:0;color:var(--dim);font-size:15px;max-width:38ch}
+.sub b{color:var(--ink)}
+
+.game{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(18px,3vw,40px);align-items:start}
+@media(max-width:900px){.game{grid-template-columns:minmax(0,1fr)}}
+
+/* players */
+.players{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+.tab{min-height:44px;padding:0 14px;border:2px solid var(--rule);background:transparent;border-radius:999px;font-weight:700;font-stretch:80%;display:inline-flex;align-items:center;gap:8px}
+.tab[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.tab .pts{font-variant-numeric:tabular-nums;font-weight:500;opacity:.75}
+.addp{display:flex;gap:6px}
+.addp input{width:9.5em;min-height:44px;font-size:16px;padding:0 12px;border:2px solid var(--hair);background:var(--paper);border-radius:999px}
+.ghost{min-height:44px;padding:0 14px;border:2px dashed var(--dim);background:transparent;border-radius:999px;font-weight:600}
+
+/* card */
+.card{position:relative;background:var(--paper);border:3px solid var(--rule);padding:clamp(8px,1.6vw,16px);box-shadow:8px 8px 0 var(--rule)}
+.cardhead{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));text-align:center;font-weight:900;font-stretch:62%;font-size:clamp(28px,5vw,46px);line-height:1;padding:4px 0 8px}
+.cardhead span:nth-child(3){color:var(--red)}
+.who{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px solid var(--hair);padding-top:8px;margin-top:8px;font-size:14px;color:var(--dim)}
+.who input{border:0;border-bottom:2px solid var(--hair);background:transparent;font-weight:700;font-size:16px;color:var(--ink);padding:2px 0;width:12em}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:2px solid var(--rule);border-left:2px solid var(--rule)}
+.cell{position:relative;aspect-ratio:1/1;border:0;border-right:2px solid var(--rule);border-bottom:2px solid var(--rule);background:transparent;padding:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600;font-stretch:82%;font-size:clamp(13px,1.45vw,16px);line-height:1.15;hyphens:auto;overflow-wrap:anywhere;overflow:hidden}
+.cell:hover{background:light-dark(#f4f3ef,#232322)}
+.cell .q{position:relative;z-index:1}
+.cell .dab{position:absolute;inset:9%;border-radius:50%;background:var(--redwash);transform:scale(0) rotate(-12deg);transition:transform .22s cubic-bezier(.3,1.6,.5,1);z-index:2;mix-blend-mode:multiply}
+:root[data-theme=dark] .cell .dab{mix-blend-mode:normal}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .cell .dab{mix-blend-mode:normal}}
+.cell.on .dab{transform:scale(1) rotate(-12deg)}
+.cell.on .q{z-index:3;color:#fff}
+.cell .ts{position:absolute;right:5px;bottom:3px;z-index:3;font-size:13px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;opacity:0}
+.cell.on .ts{opacity:.9}
+.cell.free{font-stretch:70%;font-weight:800}
+.cell.free .q::before{content:"Free · ";color:var(--red)}
+.cell.free.on .q::before{color:#fff}
+.cell.win{outline:3px solid var(--ink);outline-offset:-5px}
+.stamp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:5}
+.stamp b{font-stretch:62%;font-weight:900;font-size:clamp(72px,16vw,168px);color:var(--red);border:8px solid var(--red);padding:0 .15em;line-height:1;background:var(--paper);transform:rotate(-9deg) scale(.4);opacity:0;transition:transform .3s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+.stamp.show b{transform:rotate(-9deg) scale(1);opacity:1}
+@media(prefers-reduced-motion:reduce){.cell .dab,.stamp b{transition:none}}
+.cardtools{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.btn{min-height:44px;padding:0 16px;border:2px solid var(--rule);background:var(--paper);font-weight:700;border-radius:4px}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.warn{border-color:var(--red);color:var(--red)}
+
+/* side */
+.side{display:grid;gap:18px}
+.panel{background:var(--paper);border:2px solid var(--rule);padding:16px}
+.panel h2{margin:0 0 10px;font-size:20px;font-stretch:75%;font-weight:800;line-height:1.1}
+.clock{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.time{font-stretch:62%;font-weight:900;font-size:clamp(44px,6vw,60px);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.score{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline}
+.big{font-stretch:62%;font-weight:900;font-size:clamp(64px,9vw,96px);line-height:.9;color:var(--red);font-variant-numeric:tabular-nums}
+.breakdown{font-size:15px;color:var(--dim)}
+.breakdown b{color:var(--ink);font-variant-numeric:tabular-nums}
+.board{list-style:none;margin:12px 0 0;padding:0;border-top:1px solid var(--hair)}
+.board li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.board li b{font-variant-numeric:tabular-nums}
+.board li.lead span::after{content:" — leading";color:var(--red);font-weight:700}
+.log{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;border-top:1px solid var(--hair)}
+.log li{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:8px;padding:6px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.log time{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.log .p{color:var(--dim)}
+.empty{color:var(--dim);font-size:15px;margin:8px 0 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.note{font-size:13px;color:var(--dim);margin:8px 0 0}
+
+/* rules */
+.rules{border-top:3px solid var(--rule)}
+.rules .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@media(max-width:760px){.rules .cols{grid-template-columns:minmax(0,1fr)}}
+.rules h3{margin:0 0 6px;font-stretch:75%;font-weight:800;font-size:20px}
+.rules p,.rules li{font-size:16px;max-width:60ch}
+.rules ul{padding-left:1.1em;margin:0}
+.pool{columns:3 14em;column-gap:24px;font-size:15px;padding-left:1.2em;margin:8px 0 0}
+.pool li{break-inside:avoid;padding:2px 0}
+details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+footer{font-size:13px;color:var(--dim)}
+</style>
+</head>
+<body>
+<header class="band"><div class="wrap title">
+  <h1>Artist Myth Bingo</h1>
+  <p class="sub">A <b>Nobody's Business</b> freebie. Daub every self-mythology cliché the moment a guest says it.</p>
+</div></header>
+
+<main class="band"><div class="wrap game">
+  <section aria-label="Bingo card">
+    <div class="players" id="players"></div>
+    <div class="card" id="card">
+      <div class="cardhead" aria-hidden="true"><span>M</span><span>Y</span><span>T</span><span>H</span><span>S</span></div>
+      <div class="grid" id="grid" role="grid"></div>
+      <div class="who"><label>Card of <input id="pname" maxlength="28" aria-label="Player name"></label><span id="cardno"></span></div>
+      <div class="stamp" id="stamp"><b>BINGO</b></div>
+    </div>
+    <div class="cardtools">
+      <button class="btn" id="shuffle">Deal a new card</button>
+      <button class="btn warn" id="remove">Remove this player</button>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="panel">
+      <h2>Episode clock</h2>
+      <div class="clock">
+        <span class="time" id="time">00:00</span>
+        <button class="btn primary" id="go">Start</button>
+        <button class="btn" id="zero">Reset clock</button>
+      </div>
+      <p class="note">Each daub is stamped with the clock time, so you can find the moment in the edit.</p>
+    </div>
+    <div class="panel">
+      <h2 id="scoretitle">Score</h2>
+      <div class="score">
+        <span class="big" id="big">0</span>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+      <ul class="board" id="board"></ul>
+    </div>
+    <div class="panel">
+      <h2>Said on air</h2>
+      <ol class="log" id="log"></ol>
+      <p class="empty" id="logempty">Nothing yet. Start the clock and listen.</p>
+      <div class="row">
+        <button class="btn" id="copy">Copy log</button>
+        <button class="btn warn" id="wipe">Clear everything</button>
+      </div>
+      <p class="note" id="copymsg" aria-live="polite"></p>
+    </div>
+  </aside>
+</div></main>
+
+<section class="band rules"><div class="wrap">
+  <div class="cols">
+    <div><h3>How to play on air</h3>
+      <ul>
+        <li>Add the guest (and yourself, if you dare). Each player gets their own card.</li>
+        <li>Start the clock when recording starts.</li>
+        <li>When a myth is said, near enough counts, tap the square. Tap again to take it back.</li>
+      </ul></div>
+    <div><h3>Scoring</h3>
+      <ul>
+        <li>1 point per daubed myth</li>
+        <li>5 points per complete line: row, column or diagonal</li>
+        <li>25 extra for a full card</li>
+        <li>The centre square is free. Everyone sighs before answering.</li>
+      </ul></div>
+    <div><h3>For listeners</h3>
+      <p>Play along with your own card while you listen, or play it on yourself. Deal a new card for a different mix of myths each time.</p>
+    </div>
+  </div>
+  <details>
+    <summary>All the myths in the pool</summary>
+    <ol class="pool" id="pool"></ol>
+  </details>
+  <footer><p>Nobody's Business — a podcast about the hidden economics of artistic life.</p></footer>
+</div></section>
+
+<script>
+{
+const MYTHS=[
+ "I could never do a 9-to-5","My suffering feeds the work","The muse decides","Art is my therapy",
+ "I don't do it for the money","Money corrupts the work","I've always known I was an artist","Real artists don't market themselves",
+ "Success means selling out","I'd do it even if nobody paid me","The work speaks for itself","Talent can't be taught",
+ "I'm terrible with money","I do my best work on deadline","I can't explain it, it just comes","You have to sacrifice everything",
+ "Rejection makes you stronger","It's a calling","I don't really network","My parents never understood",
+ "I only work at night","Teaching is my plan B","Keep going and it will happen","One day it will pay off",
+ "I'm an outsider in my own field","The commercial jobs fund the real work","Genius is lonely","I'm not a business person",
+ "It found me","Comfort kills creativity","Nobody does it for the fame","I'll rest when it's finished",
+ "Being broke keeps you honest","The industry is broken (but I made it)","If you can do anything else, do that","Luck had nothing to do with it"
+];
+const FREE="Sighs before answering";
+const LINES=[];
+for(let i=0;i<5;i++){LINES.push([0,1,2,3,4].map(j=>i*5+j));LINES.push([0,1,2,3,4].map(j=>j*5+i))}
+LINES.push([0,6,12,18,24],[4,8,12,16,20]);
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+let uid=1;
+function deal(){
+  const ix=MYTHS.map((_,i)=>i);
+  for(let i=ix.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ix[i],ix[j]]=[ix[j],ix[i]]}
+  const cells=ix.slice(0,24);cells.splice(12,0,-1);return cells;
+}
+function newPlayer(name){return{id:uid++,name,cells:deal(),daubs:Array(25).fill(null).map((_,i)=>i===12?0:null),no:1000+Math.floor(Math.random()*9000)}}
+
+let S;
+try{S=JSON.parse(localStorage.getItem("amb-state")||"null")}catch(e){S=null}
+if(!S||!Array.isArray(S.players)||!S.players.length){
+  S={players:[newPlayer("Guest")],active:0,log:[],base:0,startAt:null};
+}else{uid=Math.max(...S.players.map(p=>p.id))+1}
+const save=()=>{try{localStorage.setItem("amb-state",JSON.stringify(S))}catch(e){}};
+const now=()=>S.base+(S.startAt?Date.now()-S.startAt:0);
+const P=()=>S.players[S.active];
+
+function tally(p){
+  const on=p.daubs.map(d=>d!==null);
+  const myths=on.filter((v,i)=>v&&i!==12).length;
+  const won=LINES.filter(l=>l.every(i=>on[i]));
+  const full=on.every(Boolean);
+  return{myths,lines:won.length,won,full,score:myths+won.length*5+(full?25:0)};
+}
+
+function renderPlayers(){
+  $("players").innerHTML=S.players.map((p,i)=>`<button class="tab" aria-pressed="${i===S.active}" data-i="${i}">${esc(p.name)}<span class="pts">${tally(p).score}</span></button>`).join("")+
+   `<form class="addp" id="addform"><input id="newname" placeholder="Add player" aria-label="New player name" maxlength="28"><button class="ghost" type="submit">Add</button></form>`;
+}
+function renderCard(){
+  const p=P(),t=tally(p),winset=new Set(t.won.flat());
+  $("grid").innerHTML=p.cells.map((m,i)=>{
+    const on=p.daubs[i]!==null,free=m<0,txt=free?FREE:MYTHS[m];
+    return `<button class="cell${on?" on":""}${free?" free":""}${winset.has(i)?" win":""}" data-i="${i}" role="gridcell" aria-pressed="${on}" ${free?"disabled":""}>
+      <span class="dab"></span><span class="q">${esc(txt)}</span>${on&&!free?`<span class="ts">${fmt(p.daubs[i])}</span>`:""}</button>`}).join("");
+  $("pname").value=p.name;
+  $("cardno").textContent="Card no. "+p.no;
+  $("remove").hidden=S.players.length<2;
+}
+function renderScore(){
+  const p=P(),t=tally(p);
+  $("scoretitle").textContent="Score: "+p.name;
+  $("big").textContent=t.score;
+  $("breakdown").innerHTML=`<b>${t.myths}</b> myths × 1<br><b>${t.lines}</b> lines × 5${t.full?"<br><b>Full card</b> +25":""}`;
+  const ranked=S.players.map(q=>({n:q.name,s:tally(q).score})).sort((a,b)=>b.s-a.s);
+  $("board").innerHTML=S.players.length>1?ranked.map((r,i)=>`<li class="${i===0&&r.s>0&&r.s>(ranked[1]?.s??-1)?"lead":""}"><span>${esc(r.n)}</span><b>${r.s}</b></li>`).join(""):"";
+}
+function renderLog(){
+  const rows=[...S.log].sort((a,b)=>a.t-b.t);
+  $("log").innerHTML=rows.map(r=>`<li><time>${fmt(r.t)}</time><span>${esc(MYTHS[r.m])} <span class="p">— ${esc(nameOf(r.pid))}</span></span></li>`).join("");
+  $("logempty").hidden=rows.length>0;
+}
+const nameOf=id=>(S.players.find(p=>p.id===id)||{name:"(removed)"}).name;
+function render(){renderPlayers();renderCard();renderScore();renderLog();save()}
+
+let stampTimer;
+function stamp(text){
+  const s=$("stamp");s.querySelector("b").textContent=text;s.classList.add("show");
+  clearTimeout(stampTimer);stampTimer=setTimeout(()=>s.classList.remove("show"),1700);
+}
+
+$("grid").addEventListener("click",e=>{
+  const c=e.target.closest(".cell");if(!c||c.disabled)return;
+  const p=P(),i=+c.dataset.i,before=tally(p);
+  if(p.daubs[i]===null){
+    const t=now();p.daubs[i]=t;S.log.push({t,pid:p.id,m:p.cells[i]});
+  }else{
+    p.daubs[i]=null;S.log=S.log.filter(r=>!(r.pid===p.id&&r.m===p.cells[i]));
+  }
+  const after=tally(p);
+  render();
+  if(after.full&&!before.full)stamp("FULL CARD");
+  else if(after.lines>before.lines)stamp("BINGO");
+});
+
+$("players").addEventListener("click",e=>{
+  const b=e.target.closest(".tab");if(!b)return;S.active=+b.dataset.i;render();
+});
+$("players").addEventListener("submit",e=>{
+  e.preventDefault();const v=$("newname").value.trim();
+  S.players.push(newPlayer(v||"Player "+(S.players.length+1)));S.active=S.players.length-1;render();
+});
+$("pname").addEventListener("input",e=>{P().name=e.target.value||"Player";renderPlayers();renderScore();renderLog();save()});
+
+function twoStep(btn,label,fn){
+  let armed=false,t;
+  btn.addEventListener("click",()=>{
+    if(!armed){armed=true;const orig=btn.textContent;btn.textContent=label;t=setTimeout(()=>{armed=false;btn.textContent=orig},2600);return}
+    clearTimeout(t);armed=false;fn();
+  });
+}
+const resetLabels=()=>{$("shuffle").textContent="Deal a new card";$("remove").textContent="Remove this player";$("wipe").textContent="Clear everything"};
+twoStep($("shuffle"),"Lose this card? Tap again",()=>{
+  const p=P();S.log=S.log.filter(r=>r.pid!==p.id);
+  Object.assign(p,{cells:deal(),daubs:Array(25).fill(null).map((_,i)=>i===12?0:null),no:1000+Math.floor(Math.random()*9000)});
+  resetLabels();render();
+});
+twoStep($("remove"),"Remove? Tap again",()=>{
+  const p=P();S.log=S.log.filter(r=>r.pid!==p.id);S.players.splice(S.active,1);S.active=0;resetLabels();render();
+});
+twoStep($("wipe"),"Clear all players and log? Tap again",()=>{
+  S={players:[newPlayer("Guest")],active:0,log:[],base:0,startAt:null};resetLabels();tick();setGo();render();
+});
+
+const setGo=()=>{$("go").textContent=S.startAt?"Pause":(S.base?"Resume":"Start")};
+$("go").addEventListener("click",()=>{
+  if(S.startAt){S.base+=Date.now()-S.startAt;S.startAt=null}else{S.startAt=Date.now()}
+  setGo();save();
+});
+$("zero").addEventListener("click",()=>{S.base=0;S.startAt=S.startAt?Date.now():null;tick();save()});
+const tick=()=>{$("time").textContent=fmt(now())};
+const clock=setInterval(tick,250);
+
+$("copy").addEventListener("click",async()=>{
+  const rows=[...S.log].sort((a,b)=>a.t-b.t).map(r=>`${fmt(r.t)}  ${nameOf(r.pid)}: ${MYTHS[r.m]}`);
+  const scores=S.players.map(p=>`${p.name}: ${tally(p).score} pts`);
+  const text="Artist Myth Bingo\n\n"+scores.join("\n")+"\n\n"+(rows.join("\n")||"(no myths logged)");
+  try{await navigator.clipboard.writeText(text);$("copymsg").textContent="Log copied."}
+  catch(err){$("copymsg").textContent="Copy was blocked here. Select the log above and copy it by hand."}
+});
+
+$("pool").innerHTML=MYTHS.map(m=>`<li>${esc(m)}</li>`).join("");
+tick();setGo();render();
+}
+</script>
+</body>
+</html>
