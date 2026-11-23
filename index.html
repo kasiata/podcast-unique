@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
 <style>
-/* VOICE: blunt, funny, a little cruel to the clichés, never to the guest
-   IDEA: a cheap bingo-hall card on thin paper, hit with an ink dauber live on air
+/* VOICE: blunt, funny, a little cruel to the clichés, never to the player
+   IDEA: a cheap bingo-hall card on thin paper, marked with an ink dauber or a pen
    PICTURE: the card itself, large, at the top; daubs land as wet red stamps
    COLOUR and TYPE: newsprint white, hard black ink, one dauber red; Archivo condensed (the show's wordmark)
    LAYOUT: title strip, then card + live scoreboard/log side by side; stacks below 900px */
@@ -21,7 +21,7 @@
   --rule:light-dark(#111111,#5b5b58);
   --hair:light-dark(#d6d5d0,#333331);
   --red:#e3173e;
-  --redwash:light-dark(rgba(227,23,62,.86),rgba(227,23,62,.78));
+  --redwash:light-dark(rgba(227,23,62,.42),rgba(227,23,62,.55));
 }
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
@@ -59,16 +59,13 @@ h1{margin:0;font-stretch:62%;font-weight:900;font-size:clamp(40px,7vw,76px);line
 .cell{position:relative;aspect-ratio:1/1;border:0;border-right:2px solid var(--rule);border-bottom:2px solid var(--rule);background:transparent;padding:6px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600;font-stretch:82%;font-size:clamp(13px,1.45vw,16px);line-height:1.15;hyphens:auto;overflow-wrap:anywhere;overflow:hidden}
 .cell:hover{background:light-dark(#f4f3ef,#232322)}
 .cell .q{position:relative;z-index:1}
-.cell .dab{position:absolute;inset:9%;border-radius:50%;background:var(--redwash);transform:scale(0) rotate(-12deg);transition:transform .22s cubic-bezier(.3,1.6,.5,1);z-index:2;mix-blend-mode:multiply}
+.cell .dab{position:absolute;inset:4%;border-radius:50%;background:var(--redwash);transform:scale(0) rotate(-12deg);transition:transform .22s cubic-bezier(.3,1.6,.5,1);z-index:2;mix-blend-mode:multiply}
 :root[data-theme=dark] .cell .dab{mix-blend-mode:normal}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) .cell .dab{mix-blend-mode:normal}}
 .cell.on .dab{transform:scale(1) rotate(-12deg)}
-.cell.on .q{z-index:3;color:#fff}
-.cell .ts{position:absolute;right:5px;bottom:3px;z-index:3;font-size:13px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;opacity:0}
-.cell.on .ts{opacity:.9}
+.cell.on .q{z-index:3}
 .cell.free{font-stretch:70%;font-weight:800}
 .cell.free .q::before{content:"Free · ";color:var(--red)}
-.cell.free.on .q::before{color:#fff}
 .cell.win{outline:3px solid var(--ink);outline-offset:-5px}
 .stamp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:5}
 .stamp b{font-stretch:62%;font-weight:900;font-size:clamp(72px,16vw,168px);color:var(--red);border:8px solid var(--red);padding:0 .15em;line-height:1;background:var(--paper);transform:rotate(-9deg) scale(.4);opacity:0;transition:transform .3s cubic-bezier(.3,1.6,.5,1),opacity .2s}
@@ -83,7 +80,6 @@ h1{margin:0;font-stretch:62%;font-weight:900;font-size:clamp(40px,7vw,76px);line
 .side{display:grid;gap:18px}
 .panel{background:var(--paper);border:2px solid var(--rule);padding:16px}
 .panel h2{margin:0 0 10px;font-size:20px;font-stretch:75%;font-weight:800;line-height:1.1}
-.clock{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .time{font-stretch:62%;font-weight:900;font-size:clamp(44px,6vw,60px);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
 .score{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:baseline}
 .big{font-stretch:62%;font-weight:900;font-size:clamp(64px,9vw,96px);line-height:.9;color:var(--red);font-variant-numeric:tabular-nums}
@@ -94,7 +90,7 @@ h1{margin:0;font-stretch:62%;font-weight:900;font-size:clamp(40px,7vw,76px);line
 .board li b{font-variant-numeric:tabular-nums}
 .board li.lead span::after{content:" — leading";color:var(--red);font-weight:700}
 .log{list-style:none;margin:0;padding:0;max-height:280px;overflow:auto;border-top:1px solid var(--hair)}
-.log li{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:8px;padding:6px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.log{padding-left:1.8em}.log li{padding:6px 0;border-bottom:1px solid var(--hair);font-size:15px}
 .log time{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .log .p{color:var(--dim)}
 .empty{color:var(--dim);font-size:15px;margin:8px 0 0}
@@ -112,12 +108,29 @@ h1{margin:0;font-stretch:62%;font-weight:900;font-size:clamp(40px,7vw,76px);line
 .pool li{break-inside:avoid;padding:2px 0}
 details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 footer{font-size:13px;color:var(--dim)}
+#printarea{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#000}
+  body>*:not(#printarea){display:none!important}
+  #printarea{display:block}
+  .pcard{break-after:page;border:3px solid #000;padding:6mm;font-family:"Archivo",sans-serif}
+  .pcard:last-child{break-after:auto}
+  .pcard h2{margin:0;font-stretch:62%;font-weight:900;font-size:34pt;line-height:1;text-transform:uppercase}
+  .pcard .pm{display:flex;justify-content:space-between;font-size:10pt;margin:2mm 0 4mm;border-bottom:2px solid #000;padding-bottom:2mm}
+  .pcard .hd{display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-stretch:62%;font-weight:900;font-size:30pt;line-height:1;margin-bottom:2mm}
+  .pg{display:grid;grid-template-columns:repeat(5,1fr);border-top:2px solid #000;border-left:2px solid #000}
+  .pg div{aspect-ratio:1/1;border-right:2px solid #000;border-bottom:2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;padding:2mm;font-size:11pt;font-weight:600;font-stretch:82%;line-height:1.15;position:relative}
+  .pg div.on::after{content:"";position:absolute;inset:12%;border:3px solid #e3173e;border-radius:50%}
+  .pg div.fr{font-weight:800}
+  .pcard .rl{font-size:9.5pt;margin-top:4mm;line-height:1.4}
+}
 </style>
 </head>
 <body>
 <header class="band"><div class="wrap title">
   <h1>Artist Myth Bingo</h1>
-  <p class="sub">A <b>Nobody's Business</b> freebie. Daub every self-mythology cliché the moment a guest says it.</p>
+  <p class="sub">A <b>Nobody's Business</b> freebie. Listen to a conversation about art, or have one, and mark every self-mythology cliché you hear.</p>
 </div></header>
 
 <main class="band"><div class="wrap game">
@@ -131,20 +144,13 @@ footer{font-size:13px;color:var(--dim)}
     </div>
     <div class="cardtools">
       <button class="btn" id="shuffle">Deal a new card</button>
+      <button class="btn" id="print">Print this card</button>
+      <button class="btn" id="printall">Print all cards</button>
       <button class="btn warn" id="remove">Remove this player</button>
     </div>
   </section>
 
   <aside class="side">
-    <div class="panel">
-      <h2>Episode clock</h2>
-      <div class="clock">
-        <span class="time" id="time">00:00</span>
-        <button class="btn primary" id="go">Start</button>
-        <button class="btn" id="zero">Reset clock</button>
-      </div>
-      <p class="note">Each daub is stamped with the clock time, so you can find the moment in the edit.</p>
-    </div>
     <div class="panel">
       <h2 id="scoretitle">Score</h2>
       <div class="score">
@@ -154,35 +160,37 @@ footer{font-size:13px;color:var(--dim)}
       <ul class="board" id="board"></ul>
     </div>
     <div class="panel">
-      <h2>Said on air</h2>
+      <h2>Said in this talk</h2>
       <ol class="log" id="log"></ol>
-      <p class="empty" id="logempty">Nothing yet. Start the clock and listen.</p>
+      <p class="empty" id="logempty">Nothing yet. Listen closely.</p>
       <div class="row">
         <button class="btn" id="copy">Copy log</button>
         <button class="btn warn" id="wipe">Clear everything</button>
       </div>
       <p class="note" id="copymsg" aria-live="polite"></p>
+      <p class="note" id="printmsg" aria-live="polite"></p>
     </div>
   </aside>
 </div></main>
+<div id="printarea" aria-hidden="true"></div>
 
 <section class="band rules"><div class="wrap">
   <div class="cols">
-    <div><h3>How to play on air</h3>
+    <div><h3>How to play</h3>
       <ul>
-        <li>Add the guest (and yourself, if you dare). Each player gets their own card.</li>
-        <li>Start the clock when recording starts.</li>
-        <li>When a myth is said, near enough counts, tap the square. Tap again to take it back.</li>
+        <li>Put on a podcast episode, an artist talk or an interview, or sit down with friends and talk about your work.</li>
+        <li>When you hear a myth, near enough counts, tap the square. Tap again to take it back.</li>
+        <li>Prefer paper? Print a card and mark it with a pen.</li>
       </ul></div>
     <div><h3>Scoring</h3>
       <ul>
-        <li>1 point per daubed myth</li>
+        <li>1 point per marked myth</li>
         <li>5 points per complete line: row, column or diagonal</li>
         <li>25 extra for a full card</li>
         <li>The centre square is free. Everyone sighs before answering.</li>
       </ul></div>
-    <div><h3>For listeners</h3>
-      <p>Play along with your own card while you listen, or play it on yourself. Deal a new card for a different mix of myths each time.</p>
+    <div><h3>Playing together</h3>
+      <p>Add a player for everyone in the room. Each gets a different card. Deal a new card for a fresh mix of myths, or play it on yourself and count how many you believe.</p>
     </div>
   </div>
   <details>
@@ -212,7 +220,6 @@ LINES.push([0,6,12,18,24],[4,8,12,16,20]);
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const fmt=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
 let uid=1;
 function deal(){
   const ix=MYTHS.map((_,i)=>i);
@@ -222,12 +229,11 @@ function deal(){
 function newPlayer(name){return{id:uid++,name,cells:deal(),daubs:Array(25).fill(null).map((_,i)=>i===12?0:null),no:1000+Math.floor(Math.random()*9000)}}
 
 let S;
-try{S=JSON.parse(localStorage.getItem("amb-state")||"null")}catch(e){S=null}
+try{S=JSON.parse(localStorage.getItem("amb-home")||"null")}catch(e){S=null}
 if(!S||!Array.isArray(S.players)||!S.players.length){
-  S={players:[newPlayer("Guest")],active:0,log:[],base:0,startAt:null};
+  S={players:[newPlayer("You")],active:0,log:[]};
 }else{uid=Math.max(...S.players.map(p=>p.id))+1}
-const save=()=>{try{localStorage.setItem("amb-state",JSON.stringify(S))}catch(e){}};
-const now=()=>S.base+(S.startAt?Date.now()-S.startAt:0);
+const save=()=>{try{localStorage.setItem("amb-home",JSON.stringify(S))}catch(e){}};
 const P=()=>S.players[S.active];
 
 function tally(p){
@@ -247,7 +253,7 @@ function renderCard(){
   $("grid").innerHTML=p.cells.map((m,i)=>{
     const on=p.daubs[i]!==null,free=m<0,txt=free?FREE:MYTHS[m];
     return `<button class="cell${on?" on":""}${free?" free":""}${winset.has(i)?" win":""}" data-i="${i}" role="gridcell" aria-pressed="${on}" ${free?"disabled":""}>
-      <span class="dab"></span><span class="q">${esc(txt)}</span>${on&&!free?`<span class="ts">${fmt(p.daubs[i])}</span>`:""}</button>`}).join("");
+      <span class="dab"></span><span class="q">${esc(txt)}</span></button>`}).join("");
   $("pname").value=p.name;
   $("cardno").textContent="Card no. "+p.no;
   $("remove").hidden=S.players.length<2;
@@ -256,13 +262,13 @@ function renderScore(){
   const p=P(),t=tally(p);
   $("scoretitle").textContent="Score: "+p.name;
   $("big").textContent=t.score;
-  $("breakdown").innerHTML=`<b>${t.myths}</b> myths × 1<br><b>${t.lines}</b> lines × 5${t.full?"<br><b>Full card</b> +25":""}`;
+  $("breakdown").innerHTML=`<b>${t.myths}</b> myths × 1<br><b>${t.lines}</b> ${t.lines===1?"line":"lines"} × 5${t.full?"<br><b>Full card</b> +25":""}`;
   const ranked=S.players.map(q=>({n:q.name,s:tally(q).score})).sort((a,b)=>b.s-a.s);
   $("board").innerHTML=S.players.length>1?ranked.map((r,i)=>`<li class="${i===0&&r.s>0&&r.s>(ranked[1]?.s??-1)?"lead":""}"><span>${esc(r.n)}</span><b>${r.s}</b></li>`).join(""):"";
 }
 function renderLog(){
   const rows=[...S.log].sort((a,b)=>a.t-b.t);
-  $("log").innerHTML=rows.map(r=>`<li><time>${fmt(r.t)}</time><span>${esc(MYTHS[r.m])} <span class="p">— ${esc(nameOf(r.pid))}</span></span></li>`).join("");
+  $("log").innerHTML=rows.map(r=>`<li>${esc(MYTHS[r.m])}${S.players.length>1?` <span class="p">— ${esc(nameOf(r.pid))}</span>`:""}</li>`).join("");
   $("logempty").hidden=rows.length>0;
 }
 const nameOf=id=>(S.players.find(p=>p.id===id)||{name:"(removed)"}).name;
@@ -278,7 +284,7 @@ $("grid").addEventListener("click",e=>{
   const c=e.target.closest(".cell");if(!c||c.disabled)return;
   const p=P(),i=+c.dataset.i,before=tally(p);
   if(p.daubs[i]===null){
-    const t=now();p.daubs[i]=t;S.log.push({t,pid:p.id,m:p.cells[i]});
+    const t=Date.now();p.daubs[i]=t;S.log.push({t,pid:p.id,m:p.cells[i]});
   }else{
     p.daubs[i]=null;S.log=S.log.filter(r=>!(r.pid===p.id&&r.m===p.cells[i]));
   }
@@ -314,28 +320,38 @@ twoStep($("remove"),"Remove? Tap again",()=>{
   const p=P();S.log=S.log.filter(r=>r.pid!==p.id);S.players.splice(S.active,1);S.active=0;resetLabels();render();
 });
 twoStep($("wipe"),"Clear all players and log? Tap again",()=>{
-  S={players:[newPlayer("Guest")],active:0,log:[],base:0,startAt:null};resetLabels();tick();setGo();render();
+  S={players:[newPlayer("You")],active:0,log:[]};resetLabels();render();
 });
 
-const setGo=()=>{$("go").textContent=S.startAt?"Pause":(S.base?"Resume":"Start")};
-$("go").addEventListener("click",()=>{
-  if(S.startAt){S.base+=Date.now()-S.startAt;S.startAt=null}else{S.startAt=Date.now()}
-  setGo();save();
-});
-$("zero").addEventListener("click",()=>{S.base=0;S.startAt=S.startAt?Date.now():null;tick();save()});
-const tick=()=>{$("time").textContent=fmt(now())};
-const clock=setInterval(tick,250);
 
 $("copy").addEventListener("click",async()=>{
-  const rows=[...S.log].sort((a,b)=>a.t-b.t).map(r=>`${fmt(r.t)}  ${nameOf(r.pid)}: ${MYTHS[r.m]}`);
+  const rows=[...S.log].sort((a,b)=>a.t-b.t).map((r,i)=>`${i+1}. ${MYTHS[r.m]}${S.players.length>1?" ("+nameOf(r.pid)+")":""}`);
   const scores=S.players.map(p=>`${p.name}: ${tally(p).score} pts`);
-  const text="Artist Myth Bingo\n\n"+scores.join("\n")+"\n\n"+(rows.join("\n")||"(no myths logged)");
+  const text="Artist Myth Bingo: said in this talk\n\n"+scores.join("\n")+"\n\n"+(rows.join("\n")||"(no myths logged)");
   try{await navigator.clipboard.writeText(text);$("copymsg").textContent="Log copied."}
   catch(err){$("copymsg").textContent="Copy was blocked here. Select the log above and copy it by hand."}
 });
 
 $("pool").innerHTML=MYTHS.map(m=>`<li>${esc(m)}</li>`).join("");
-tick();setGo();render();
+render();
+
+let viaButton=false;
+function buildPrint(list){
+  $("printarea").innerHTML=list.map(p=>`<div class="pcard"><h2>Artist Myth Bingo</h2>
+    <div class="pm"><span>Name: ${p.name==="You"?"________________________":esc(p.name)}</span><span>Card no. ${p.no}</span></div>
+    <div class="hd"><span>M</span><span>Y</span><span>T</span><span>H</span><span>S</span></div>
+    <div class="pg">${p.cells.map((m,i)=>`<div class="${m<0?"fr":""}${p.daubs[i]!==null&&m>=0?" on":""}">${m<0?"Free: "+esc(FREE):esc(MYTHS[m])}</div>`).join("")}</div>
+    <p class="rl">Listen to a conversation about art and circle every myth you hear. 1 point per myth, 5 per complete line (row, column or diagonal), 25 extra for a full card. Nobody's Business podcast.</p></div>`).join("");
+}
+function printCards(list){
+  buildPrint(list);viaButton=true;
+  try{window.print();$("printmsg").textContent=""}
+  catch(err){$("printmsg").textContent="Printing is blocked in this preview. Open the page in your browser and use Print (Cmd or Ctrl + P)."}
+  viaButton=false;
+}
+$("print").addEventListener("click",()=>printCards([P()]));
+$("printall").addEventListener("click",()=>printCards(S.players));
+window.addEventListener("beforeprint",()=>{if(!viaButton)buildPrint([P()])});
 }
 </script>
 </body>
